@@ -182,8 +182,8 @@ class API(Person):
 
 class User(Person):
     def __init__(self, data, header):
-        #Personクラスでリクエストを投げるために、何らかの形でヘッダーを渡さなければなりません。
-        #もう少し賢く実装できないかなぁ...。
+        # Personクラスでリクエストを投げるために、何らかの形でヘッダーを渡さなければなりません。
+        # もう少し賢く実装できないかなぁ...。
         super().__init__(data)
         self.header = header
 
@@ -221,7 +221,7 @@ class User(Person):
         if self.hide_distance:
             self.distance_mi = None
 
-    #右スワイプ
+    # 右スワイプ
     def like(self):
         endpoint = "like/{}".format(self.id)
         return self._request(endpoint)
@@ -231,7 +231,45 @@ class User(Person):
         endpoint = "pass/{}".format(self.id)
         return self._request(endpoint)
 
-    #スーパーライク。動かない??
+    # スーパーライク。動かない??
     def superlike(self):
         endpoint = "like/{}/super".format(self.id)
         return self._request(endpoint, method="POST")
+
+
+class Match(Person):
+    def __init__(self, json, header):
+
+        try:
+            self.matchId = json["_id"]
+            json.update(copy.deepcopy(json["person"]))
+            super().__init__(json)
+            self.header = header
+            self.message_count = json["message_count"]
+            if "messages" in json:
+                self.messages = [Message(i) for i in json["messages"]]
+            else:
+                self.messages = []
+        # なんかよくわからないゴミ?データがレスポンスに含まれている模様。とりあえずスルー。
+        except KeyError:
+            self.header = header
+            pass
+
+    #メッセージを送信
+    def sendMessage(self, message):
+        endpoint = "user/matches/{0}".format(self.matchId)
+        params = {"message": str(message)}
+        return self._request(endpoint, method="POST", params=params)
+
+
+class Message:
+    def __init__(self, json):
+        self.id = json["_id"]
+        self.match_id = json["match_id"]
+        self.message = json["message"]
+        self.timestamp = json["timestamp"]
+        self.to = json["to"]
+        self.from_ = json["from"]  # fromは予約語
+
+    def __repr__(self):
+        return self.message
