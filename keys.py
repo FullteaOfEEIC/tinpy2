@@ -1,0 +1,2 @@
+FBemail = "Facebookのメールアドレス"
+FBpass = "Facebookのパスワード"
