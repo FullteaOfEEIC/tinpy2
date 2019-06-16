@@ -28,9 +28,10 @@ with requests.Session() as s:
     for match in matches:
         try:
             match_id = match["id"]
-            user_id = match["person"]["_id"]
             name = match["person"]["name"]
-            print("{0}:\tuser_id={1}\tmatch_id={2}".format(
-                name, user_id, match_id))
+            messages = match["messages"]
+            if len(messages) == 0:
+                s.post("https://api.gotinder.com/user/matches/{0}".format(
+                    match_id), data=json.dumps({"はじめまして{0}さん！\nマッチありがとうございます！".format(name)}))
         except:
             pass
