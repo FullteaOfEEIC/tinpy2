@@ -12,7 +12,7 @@ token = getAccessToken(FBemail, FBpass)
 with requests.Session() as s:
     params = {"token": token}
     response = s.post(
-        "https://api.gotinder.com/v2/auth/login/facebook", data=json.dumps(params))
+        "https://api.gotinder.com/v2/auth/login/facebook?local=ja", data=json.dumps(params))
     response = json.loads(response.text)
     api_token = response["data"]["api_token"]
 
@@ -21,15 +21,16 @@ with requests.Session() as s:
                "User-agent": "Tinder/10.1.0 (iPhone; iOS 12.1; Scale/2.00)"}
     s.headers.update(headers)
 
-    # 位置情報の登録
-    location = {"lat": 35.658034, "lon": 139.701636}
-    s.post("https://api.gotinder.com/v2/meta",
-           params=json.dumps(params))
-
-    while True:
-        # 周囲のユーザーを取得
-        users = s.post("https://api.gotinder.com/user/recs")
-        for user in json.loads(users.text)["results"]:
-            id = user["_id"]
-            # 右スワイプ
-            s.get("https://api.gotinder.com/like/{}".format(id))
+    # マッチを取得
+    matches = s.post("https://api.gotinder.com/updates",
+                     data=json.dumps({"last_activity_date": 0}))
+    matches = json.loads(matches.text)["matches"]
+    for match in matches:
+        try:
+            match_id = match["id"]
+            user_id = match["person"]["_id"]
+            name = match["person"]["name"]
+            print("{0}:\tuser_id={1}\tmatch_id={2}".format(
+                name, user_id, match_id))
+        except:
+            pass
