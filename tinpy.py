@@ -56,7 +56,10 @@ class Person:
         self.jobs = []
         if "jobs" in data:
             for job in data["jobs"]:
-                self.jobs.append(job["title"]["name"])
+                if "title" in job:
+                    self.jobs.append(job["title"]["name"])
+                if "company" in job:
+                    self.jobs.append(job["company"]["name"])
 
         # 学校です。空だとフィールド自体が存在しないようです。
         self.schools = []
