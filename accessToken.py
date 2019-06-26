@@ -1,29 +1,29 @@
 import re
 import robobrowser
+from bs4 import BeautifulSoup
+import requests
 import time
 import sys
 
-
+#"""
 def getAccessToken(email, password):
+    FB_AUTH = "https://www.facebook.com/login.php?skip_api_login=1&api_key=464891386855067&kid_directed_site=0&app_id=464891386855067&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv2.8%2Fdialog%2Foauth%3Fapp_id%3D464891386855067%26channel_url%3Dhttps%253A%252F%252Fstaticxx.facebook.com%252Fconnect%252Fxd_arbiter.php%253Fversion%253D44%2523cb%253Df3fbdfb8e54d14c%2526domain%253Dtinder.com%2526origin%253Dhttps%25253A%25252F%25252Ftinder.com%25252Ff3017f04f989f3c%2526relation%253Dopener%26client_id%3D464891386855067%26display%3Dpopup%26domain%3Dtinder.com%26e2e%3D%257B%257D%26fallback_redirect_uri%3Dhttps%253A%252F%252Ftinder.com%252F%26locale%3Dja_JP%26origin%3D1%26redirect_uri%3Dhttps%253A%252F%252Fstaticxx.facebook.com%252Fconnect%252Fxd_arbiter.php%253Fversion%253D44%2523cb%253Df247314c2ec0694%2526domain%253Dtinder.com%2526origin%253Dhttps%25253A%25252F%25252Ftinder.com%25252Ff3017f04f989f3c%2526relation%253Dopener%2526frame%253Df32630633c95a9%26response_type%3Dtoken%252Csigned_request%26scope%3Duser_birthday%252Cuser_photos%252Cemail%252Cuser_friends%252Cuser_likes%26sdk%3Djoey%26version%3Dv2.8%26ret%3Dlogin%26fbapp_pres%3D0%26logger_id%3Df4b8f869-06c6-44c6-ad74-5910383fd32e&cancel_url=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D44%23cb%3Df247314c2ec0694%26domain%3Dtinder.com%26origin%3Dhttps%253A%252F%252Ftinder.com%252Ff3017f04f989f3c%26relation%3Dopener%26frame%3Df32630633c95a9%26error%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied&display=popup&locale=ja_JP"
+    data={"email":email,"pass":password}
+    with requests.Session() as s:
+        #ログイン画面へ
+        response=s.get(FB_AUTH)
 
-    MOBILE_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_1 like Mac OS X) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0 Mobile/15C153 Safari/604.1"
-    FB_AUTH = "https://www.facebook.com/v2.6/dialog/oauth?redirect_uri=fb464891386855067%3A%2F%2Fauthorize%2F&scope=user_birthday%2Cuser_photos%2Cuser_education_history%2Cemail%2Cuser_relationship_details%2Cuser_friends%2Cuser_work_history%2Cuser_likes&response_type=token%2Csigned_request&client_id=464891386855067&ret=login&fallback_redirect_uri=221e1158-f2e9-1452-1a05-8983f99f7d6e&ext=1556057433&hash=Aea6jWwMP_tDMQ9y"
-    s = robobrowser.RoboBrowser(
-        user_agent=MOBILE_USER_AGENT, parser="html.parser")
-    s.open(FB_AUTH)
-    # submit login form
-    f = s.get_form()
-    f["email"] = email
-    f["pass"] = password
+        #ログインフォームの送信先URLを取得
+        soup=BeautifulSoup(response.text,"html.parser")
+        action=soup.form.get("action")
+        action="https://www.facebook.com/"+action
 
-    s.submit_form(f)
-    # click the 'ok' button on the dialog informing you that you have already authenticated with the Tinder app
-    f = s.get_form()
-    s.submit_form(f, submit=f.submit_fields['__CONFIRM__'])
-    # get access token from the html response
-    access_token = re.search(
-        r"access_token=([\w\d]+)", s.response.content.decode()).groups()[0]
+        #ログインフォームを送信
+        response=s.post(action,data=data)
 
+        #返り値からtokenを取得
+        access_token = re.search(
+            r"access_token=([\w\d]+)", response.text).groups()[0]
     return access_token
 
 
