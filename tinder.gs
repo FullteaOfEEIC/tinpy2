@@ -4,7 +4,7 @@ folderId = "DriveのフォルダのID";
 
 //スワイプしたプロフィールの情報を記録する
 function doPost(e) {
-  var sheet = SpreadsheetApp.openById(sheetId).getSheets()[0];//スプレッドシートにアクセス
+  var sheet = SpreadsheetApp.openById(sheetId).getSheets()[0]; //スプレッドシートにアクセス
   var id = e.parameter.id;
   var name = e.parameter.name;
   var age = e.parameter.age;
@@ -24,14 +24,14 @@ function doPost(e) {
   var photo3 = e.parameter.photo3;
   var photo4 = e.parameter.photo4;
   var photo5 = e.parameter.photo5;
-  
+
   var photos = [photo0, photo1, photo2, photo3, photo4, photo5];
-  
-  var row = sheet.getLastRow() + 1;//最終行を取得
+
+  var row = sheet.getLastRow() + 1; //最終行を取得
   sheet.getRange(row, 1, 1, 10).setValues(datas);
-  
+
   //写真を保存
-  for(i=0;i<photos.length;i++){
+  for (i = 0; i < photos.length; i++) {
     var photo = photos[i];
     if (photo != null) {
       var name = id + "-" + i + ".jpg";
@@ -43,8 +43,8 @@ function doPost(e) {
 
 
 function getImage(url, name) {
-  var response = UrlFetchApp.fetch(url);//urlにアクセスしてデータを取得
-  var response = response.getBlob().getAs("image/jpeg").setName(name);//
+  var response = UrlFetchApp.fetch(url); //urlにアクセスしてデータを取得
+  var response = response.getBlob().getAs("image/jpeg").setName(name); //
   return response
 }
 
@@ -60,14 +60,14 @@ function saveFile(blob) {
 }
 
 //マッチしたプロフィールの情報を記録する
-function doGet(e){
+function doGet(e) {
   var sheet = SpreadsheetApp.openById(sheetId).getSheets()[0];
   var id = e.parameter.id;
-  
-  var ids=sheet.getRange(1,1,row).getValues();//これまでマッチした人すべてのidを取得
-  for(i=0;i<ids.length;i++){
-    if(id==ids[i][0]){
-      sheet.getRange(i+1,9).setValue(1);
+  var row = sheet.getLastRow() + 1;
+  var ids = sheet.getRange(1, 1, row).getValues(); //これまでマッチした人すべてのidを取得
+  for (i = 0; i < ids.length; i++) {
+    if (id == ids[i][0]) {
+      sheet.getRange(i + 1, 9).setValue(1);
       return;
     }
   }
