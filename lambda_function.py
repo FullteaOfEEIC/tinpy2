@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         messages = match.messages
         if len(messages) == 0:
             match.sendMessage(
-                "はじめまして{0}さん！\nマッチありがとうございます！".format(match.name))
+                "はじめまして{0}さん！ マッチありがとうございます！".format(match.name))
 
 
 def sendProfile(user):
