@@ -260,10 +260,21 @@ class Match(Person):
             pass
 
     #メッセージを送信
-    def sendMessage(self, message):
+    def _sendMessage(self, message):
         endpoint = "user/matches/{0}".format(self.matchId)
-        params = {"message": str(message)}
+        params = {"message": message}
         return self._request(endpoint, method="POST", params=params)
+
+
+    def sendMessage(self, message):
+        if type(message) is str:
+            return self._sendMessage(message)
+        elif type(message) is list:
+            retval=[]
+            for m in message:
+                retval.append(self._sendMessage(m))
+            return retval
+
 
 
 class Message:
