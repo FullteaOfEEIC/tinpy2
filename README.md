@@ -6,6 +6,7 @@ Qiitaにて気ままに連載中...
 第2話: https://qiita.com/Fulltea/items/4083c75f74e8a78a797b  
 第3話: https://qiita.com/Fulltea/items/aab00dba8daecb71f1e4  
 第3.5話: https://qiita.com/Fulltea/items/b1d0b26e5a6ae3f3a5fb  
+第4話: https://qiita.com/Fulltea/items/6a6a88eb595f5b39a605   
 
 ## Usage
 
