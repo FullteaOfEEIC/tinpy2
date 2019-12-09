@@ -27,9 +27,7 @@ class Person:
 
         # 誕生日をもとに年齢を計算しています。こちらも人によってはフィールド自体が存在しません。
         if "birth_date" in data:
-            birth_date = data["birth_date"]
-            birth_date = datetime.datetime.strptime(
-                birth_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+            birth_date = strptime(data["birth_date"])
             today = datetime.datetime.now()
             self.age = today.year - birth_date.year - \
                 ((today.month, today.day) < (birth_date.month, birth_date.day))
@@ -67,6 +65,8 @@ class Person:
         if "schools" in data:
             for school in data["schools"]:
                 self.schools.append(school["name"])
+
+        self.ping_time = strptime(data["ping_time"])
 
     def __repr__(self):
         return self.name
@@ -250,31 +250,37 @@ class Match(Person):
             super().__init__(json)
             self.header = header
             self.message_count = json["message_count"]
+            self.created_date = strptime(json["created_date"])
+            self.last_activity_date = strptime(json["last_activity_date"])
+            self.match_seen = json["seen"]["match_seen"]
+            self.last_seen_msg_id = json["seen"]["last_seen_msg_id"]
+            self.dead = json["dead"]
+            self.closed = json["closed"]
+
             if "messages" in json:
                 self.messages = [Message(i) for i in json["messages"]]
             else:
                 self.messages = []
+
         # なんかよくわからないゴミ?データがレスポンスに含まれている模様。とりあえずスルー。
         except KeyError:
             self.header = header
             pass
 
-    #メッセージを送信
+    # メッセージを送信
     def _sendMessage(self, message):
         endpoint = "user/matches/{0}".format(self.matchId)
         params = {"message": message}
         return self._request(endpoint, method="POST", params=params)
 
-
     def sendMessage(self, message):
         if type(message) is str:
             return self._sendMessage(message)
         elif type(message) is list:
-            retval=[]
+            retval = []
             for m in message:
                 retval.append(self._sendMessage(m))
             return retval
-
 
 
 class Message:
@@ -283,8 +289,13 @@ class Message:
         self.match_id = json["match_id"]
         self.message = json["message"]
         self.timestamp = json["timestamp"]
+        self.created_date = strptime(json["created_date"])
         self.to = json["to"]
         self.from_ = json["from"]  # fromは予約語
 
     def __repr__(self):
         return self.message
+
+
+def strptime(str):
+    return datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
