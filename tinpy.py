@@ -182,6 +182,13 @@ class API(Person):
     # 残り右スワイプ数
     def getLikesRemaining(self):
         return int(self.getMeta()["rating"]["likes_remaining"])
+    
+    #とても趣味の悪い名前の関数だと思う。endpointの趣味が悪いんだから仕方がない
+    def getTeasers(self):
+        endpoint = "v2/fast-match/teasers"
+        results = self._request(endpoint, method="GET")["data"]["results"]
+        return [results[i]["user"]["photos"][0]["url"] for i in range(len(results))]
+        
 
 
 class User(Person):
