@@ -2,12 +2,12 @@ import requests
 import json
 import tinpy
 
-FBemail = "Facebookのメールアドレス"
-FBpass = "Facebookのパスワード"
-url = "GASのURL"
-#token = tinpy.getAccessToken(FBemail, FBpass)
-token = "Facebookのアクセストークン"
+infos=json.load(open("infos.json", "r"))
 
+FBemail = infos["mail"]
+FBpass = infos["pass"]
+
+token = tinpy.getAccessToken(FBemail, FBpass)
 
 def lambda_handler(event, context):
 

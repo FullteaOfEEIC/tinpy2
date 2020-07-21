@@ -6,4 +6,7 @@ RUN pip install --upgrade pip setuptools\
  Werkzeug==0.16.1
  
 ADD *.py /
+ADD infos.json /
+
+CMD python main.py
 
