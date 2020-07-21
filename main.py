@@ -1,49 +1,51 @@
 import requests
 import json
 import tinpy
+import MySQLdb
+from datetime import datetime
 
-infos=json.load(open("infos.json", "r"))
+infos = json.load(open("infos.json", "r"))
 
-FBemail = infos["mail"]
-FBpass = infos["pass"]
+FB_email = infos["mail"]
+FB_pass = infos["pass"]
+latitude, longitude = infos["location"]
 
-token = tinpy.getAccessToken(FBemail, FBpass)
+db_username = "root"
+db_pass = "root"
 
-def lambda_handler(event, context):
+conn = MySQLdb.connect(user=db_username, passwd=db_pass,
+                       host="tinpy2_db", db="mysql", use_unicode=True, charset="utf8mb4")
 
-    api = tinpy.API(token)
-
-    api.setLocation(35.658034, 139.701636)
-
-    for user in api.getNearbyUsers():
-        if api.getLikesRemaining() == 0:
-            break
-        user.like()
-        sendProfile(user)
-
-    for match in api.getMatch():
-        sendMatch(match)
-        messages = match.messages
-        if len(messages) == 0:
-            match.sendMessage(
-                "はじめまして{0}さん！ マッチありがとうございます！".format(match.name))
+c = conn.cursor()
+user_insert_stmt = 'INSERT INTO tinpy2.user(id, date, name, age, gender, distance_mi, bio, jobs, schools, matched) VALUES(%(id)s, %(date)s, %(name)s, %(age)s, %(gender)s, %(distance_mi)s, %(bio)s, %(jobs)s, %(schools)s, False);'
 
 
-def sendProfile(user):
-    data = {"id": user.id, "name": user.name,
-            "age": user.age, "gender": user.gender}
-    data["bio"] = user.bio
-    for i in range(len(user.photos)):
-        data["photo{0}".format(i)] = user.photos[i]
-    data["videos"] = user.videos
-    data["schools"] = user.schools
-    data["jobs"] = user.jobs
-    data["distance_mi"] = user.distance_mi
-    with requests.Session() as s:
-        s.post(url, data=data)
+token = tinpy.getAccessToken(FB_email, FB_pass)
+api = tinpy.API(token)
+api.setLocation(latitude, longitude)
 
+for user in api.getNearbyUsers():
+    if api.getLikesRemaining() == 0:
+        break
+    for i, url in enumerate(user.photos):
+        r=requests.get(url)
+        with open("/images/{0}-{1}.jpg".format(user.id, i), "wb") as fp:
+            fp.write(r.content)
 
-def sendMatch(match):
-    with requests.Session() as s:
-        data = {"id": match.id}
-        s.get(url, params=data)
+    age=user.age
+    if age is None:
+        age=-1
+    distance_mi=user.distance_mi
+    if distance_mi is None:
+        distance_mi=-1
+    gender=user.gender
+    if gender is None:
+        gender=-1
+    data = {"id":user.id, "date":datetime.now(), "name":user.name, "age":age,
+                                   "gender":gender, "distance_mi":distance_mi, "bio":user.bio, "schools":" ".join(user.schools), "jobs":" ".join(user.jobs)}
+    print(data)
+    c.execute(user_insert_stmt, data)
+    user.like()
+    conn.commit()
+
+conn.close()

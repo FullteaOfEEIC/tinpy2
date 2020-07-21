@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+    tinpy2:
+        build: 
+            context: .
+        image: fullteaofeeic/tinpy2
+        container_name: tinpy2
+        volumes:
+            - ./db/images:/images
+    db:
+        build: 
+            context: ./db
+        image: fullteaofeeic/tinpy2_db
+        container_name: tinpy2_db
+        volumes:
+             - ./db/sql:/docker-entrypoint-initdb.d
+             #- ./db/data:/var/lib/mysql
+             - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+        
