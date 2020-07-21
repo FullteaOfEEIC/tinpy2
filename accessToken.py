@@ -1,5 +1,6 @@
 import re
 import robobrowser
+import sys
 
 """
 注釈(English follows)
@@ -13,7 +14,7 @@ Notes.
 
 THIS CODE IS WRITTEN IN VERY VERY BAD MANNER.
 ```s.submit_form(f, submit=f.submit_fields['__CONFIRM__'])``` returns error and the error message contains the access token. So I make them raise error on purpose and get token from there.
-As this code works, I' m now using this and also understand that this is very bad code. If anyone could help me, please make PR.
+As this code works, I' m now using this and also understand that this is very bad. If anyone could help me, please make PR.
 
 """
 
