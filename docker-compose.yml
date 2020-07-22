@@ -3,7 +3,7 @@ version: '3'
 services:
     tinpy2:
         build: 
-            context: .
+            context: ./swipe
         image: fullteaofeeic/tinpy2
         container_name: tinpy2
         volumes:
@@ -17,4 +17,15 @@ services:
              - ./db/sql:/docker-entrypoint-initdb.d
              #- ./db/data:/var/lib/mysql
              - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+
+    analytics:
+        build:
+            context: ./analytics
+        image: fullteaofeeic/tinpy2_analytics
+        container_name: tinpy2_analytics
+        ports:
+            - 127.0.0.1:8888:8888
+        volumes:
+            - ./db/images:/images
+            - ./analytics/src:/mnt
         
