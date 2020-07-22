@@ -3,12 +3,21 @@ import json
 import tinpy
 import MySQLdb
 from datetime import datetime
+import time
 from envs import *
 
 
-
-conn = MySQLdb.connect(user=db_username, passwd=db_pass,
+for i in range(5):
+    try:
+        conn = MySQLdb.connect(user=db_username, passwd=db_pass,
                        host=db_host, db="mysql", use_unicode=True, charset="utf8mb4")
+        break
+    except:
+        print("connect error to DB... Try again in 3 seconds.")
+        time.sleep(3)
+else:
+    print("Error connecting DB. system stoped.")
+    sys.exit(1)
 
 c = conn.cursor()
 user_insert_stmt = 'INSERT INTO tinpy2.user(id, date, name, age, gender, distance_mi, bio, jobs, schools, matched) VALUES(%(id)s, %(date)s, %(name)s, %(age)s, %(gender)s, %(distance_mi)s, %(bio)s, %(jobs)s, %(schools)s, False);'
