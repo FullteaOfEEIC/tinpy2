@@ -1,3 +1,5 @@
+import json
+
 infos = json.load(open("infos.json", "r"))
 
 FB_email = infos["mail"]

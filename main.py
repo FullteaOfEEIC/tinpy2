@@ -11,6 +11,7 @@ for i in range(5):
     try:
         conn = MySQLdb.connect(user=db_username, passwd=db_pass,
                        host=db_host, db="mysql", use_unicode=True, charset="utf8mb4")
+        print("connect success.")
         break
     except:
         print("connect error to DB... Try again in 3 seconds.")
