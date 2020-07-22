@@ -5,7 +5,8 @@ RUN pip install --upgrade setuptools pip\
  pandas\
  pymysql\
  opencv-python\
- sqlalchemy
+ sqlalchemy\
+ tqdm
  
 RUN touch /root/.jupyter/jupyter_notebook_config.py
 RUN echo "c.NotebookApp.ip = '0.0.0.0'" >> /root/.jupyter/jupyter_notebook_config.py
