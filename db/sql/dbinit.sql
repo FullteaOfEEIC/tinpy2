@@ -15,9 +15,18 @@ CREATE TABLE IF NOT EXISTS user(
 );
 
 CREATE TABLE IF NOT EXISTS matches(
-  match_id CHAR(24) PRIMARY KEY,
+  match_id VARCHAR(128) PRIMARY KEY,
   created_date DATETIME,
   user_id CHAR(24),
   dead BOOLEAN,
   closed BOOLEAN
+);
+
+CREATE TABLE IF NOT EXISTS messages(
+  id VARCHAR(128) PRIMARY KEY,
+  match_id VARCHAR(128),
+  created_date DATETIME,
+  to_ CHAR(24),
+  from_ CHAR(24),
+  message VARCHAR(2400)
 );

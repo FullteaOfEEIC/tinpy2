@@ -9,5 +9,5 @@ RUN pip install --upgrade pip setuptools\
 ADD *.py /
 ADD infos.json /
 
-CMD python main.py
+CMD python autolike.py
 

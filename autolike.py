@@ -27,6 +27,7 @@ user_insert_stmt = 'INSERT INTO tinpy2.user(id, date, name, age, gender, distanc
 user_match_stmt = 'UPDATE tinpy2.user SET matched = True WHERE id = %(id)s;'
 match_insert_stmt = 'INSERT IGNORE INTO tinpy2.matches(match_id, created_date, user_id) VALUES(%(match_id)s, %(created_date)s, %(user_id)s);'
 
+
 token = tinpy.getAccessToken(FB_email, FB_pass)
 api = tinpy.API(token)
 api.setLocation(latitude, longitude)
@@ -50,7 +51,7 @@ for user in api.getNearbyUsers():
     if gender is None:
         gender = -1
     data = {"id": user.id, "date": datetime.now(), "name": user.name, "age": age,
-            "gender": gender, "distance_mi": distance_mi, "bio": user.bio, "schools": " ".join(user.schools), "jobs": " ".join(user.jobs)}
+            "gender": gender, "distance_mi": distance_mi, "bio": user.bio, "schools": json.dumps(user.schools,ensure_ascii=False), "jobs": json.dumps(user.jobs,ensure_ascii=False)}
     c.execute(user_insert_stmt, data)
     user.like()
     conn.commit()
@@ -58,5 +59,5 @@ for user in api.getNearbyUsers():
 for match in api.getMatch():
     c.execute(user_match_stmt, {"id":match.id})
     c.execute(match_insert_stmt, {"match_id":match.matchId, "created_date": match.created_date, "user_id":match.id})
-conn.commit() 
+conn.commit()
 conn.close()
