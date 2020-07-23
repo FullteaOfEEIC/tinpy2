@@ -264,7 +264,10 @@ class Match(Person):
             self.created_date = strptime(json["created_date"])
             self.last_activity_date = strptime(json["last_activity_date"])
             self.match_seen = json["seen"]["match_seen"]
-            self.last_seen_msg_id = json["seen"]["last_seen_msg_id"]
+            if "last_seen_msg_id" in json["seen"]:
+                self.last_seen_msg_id = json["seen"]["last_seen_msg_id"]
+            else:
+                self.last_seen_msg_id = -1
             self.dead = json["dead"]
             self.closed = json["closed"]
 
